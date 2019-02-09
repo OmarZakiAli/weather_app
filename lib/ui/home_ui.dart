@@ -12,20 +12,7 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  utils.Weather _weather = utils.Weather();
-
-  void show() async {
-    Map m = await getWeatherData("Cairo");
-    String city = m["name"];
-    String desc = m["weather"][0]["description"];
-    num temp = m["main"]["temp"];
-    num hum = m["main"]["humidity"];
-    _weather =
-        utils.Weather(city: city, description: desc, temp: temp, hum: hum);
-    debugPrint(
-        "city is ${_weather.city},  ${_weather.description}  temp is ${_weather.temp}");
-    setState(() {});
-  }
+  String city = "Cairo";
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +26,7 @@ class HomeState extends State<Home> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => show(),
+            onPressed: () => debugPrint("button pressed"),
             icon: Icon(
               Icons.menu,
               color: Colors.white,
@@ -47,10 +34,6 @@ class HomeState extends State<Home> {
           )
         ],
       ),
-
-
-
-
       body: Stack(
         children: <Widget>[
           Center(
@@ -64,34 +47,22 @@ class HomeState extends State<Home> {
           Container(
             alignment: Alignment.topRight,
             margin: EdgeInsets.only(right: 40, top: 30),
-            child: Text("${_weather.city}", style: getCityStyle()),
+            child: getCity(context),
           ),
           Container(
             alignment: Alignment.center,
             child: Image.asset("images/light_rain.png"),
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(60.0, 340.0, 0.0, 0.0),
-            child: Text(
-              "${_weather.temp}'c",
-              style: tempstyle(),
-            ),
-          ),
+              margin: EdgeInsets.fromLTRB(60.0, 340.0, 0.0, 0.0),
+              child: getTemp(context)),
           Container(
-            margin: EdgeInsets.fromLTRB(60.0, 390.0, 0.0, 0.0),
-            child: Text(
-              "${_weather.hum}'h",
-              style: tempstyle(),
-            ),
-          ),
+              margin: EdgeInsets.fromLTRB(60.0, 390.0, 0.0, 0.0),
+              child: getHum(context)),
           Container(
-            margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 30),
-            alignment: Alignment.bottomCenter,
-            child: Text(
-              "${_weather.description}",
-              style: tempstyle(),
-            ),
-          )
+              margin: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 30),
+              alignment: Alignment.bottomCenter,
+              child: getDesc(context))
         ],
       ),
     );
@@ -103,14 +74,75 @@ class HomeState extends State<Home> {
     http.Response response = await http.get(apiUrl);
     return json.decode(response.body);
   }
-}
 
-TextStyle tempstyle() {
-  return TextStyle(
-      color: Colors.white, fontSize: 44, fontWeight: FontWeight.w700);
-}
+  TextStyle tempstyle() {
+    return TextStyle(
+        color: Colors.white, fontSize: 44, fontWeight: FontWeight.w700);
+  }
 
-TextStyle getCityStyle() {
-  return TextStyle(
-      color: Colors.white, fontSize: 32, fontStyle: FontStyle.italic);
+  TextStyle getCityStyle() {
+    return TextStyle(
+        color: Colors.white, fontSize: 32, fontStyle: FontStyle.italic);
+  }
+
+  getCity(BuildContext context) {
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        if (snapshot.hasData) {
+          return Text("${snapshot.data["name"]}", style: getCityStyle());
+        } else {
+          return Container();
+        }
+      },
+      future: getWeatherData(city),
+    );
+  }
+
+  getTemp(BuildContext context) {
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            "${snapshot.data["main"]["temp"]}'c",
+            style: tempstyle(),
+          );
+        } else {
+          return Container();
+        }
+      },
+      future: getWeatherData(city),
+    );
+  }
+
+  getHum(BuildContext context) {
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            "${snapshot.data["main"]["humidity"]}'h",
+            style: tempstyle(),
+          );
+        } else {
+          return Container();
+        }
+      },
+      future: getWeatherData(city),
+    );
+  }
+
+  getDesc(BuildContext context) {
+    return FutureBuilder(
+      builder: (BuildContext context, AsyncSnapshot<Map> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            "${snapshot.data["weather"][0]["description"]}",
+            style: tempstyle(),
+          );
+        } else {
+          return Container();
+        }
+      },
+      future: getWeatherData(city),
+    );
+  }
 }
