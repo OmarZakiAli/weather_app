@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import './ui/home_ui.dart';
-void main(){
+import './ui/input_page_ui.dart';
 
-  runApp(MaterialApp(title: "weather app",
-  home: Home(),
+void main() {
+  runApp(MaterialApp(
+    title: "weather app",
+    home: Home(),
   ));
-
 }

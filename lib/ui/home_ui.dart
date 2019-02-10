@@ -3,8 +3,14 @@ import 'dart:async';
 import 'dart:convert';
 import '../util/utils.dart' as utils;
 import 'package:http/http.dart' as http;
+import './input_page_ui.dart';
 
 class Home extends StatefulWidget {
+
+  final String city;
+
+  Home({Key key, this.city="Damietta"}) : super(key:key);
+
   @override
   State<StatefulWidget> createState() {
     return HomeState();
@@ -12,10 +18,14 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  String city = "Cairo";
+  String city ="Cairo";
 
   @override
   Widget build(BuildContext context) {
+
+
+     city= widget.city;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.red,
@@ -26,7 +36,10 @@ class HomeState extends State<Home> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => debugPrint("button pressed"),
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => InputUi()));
+            },
             icon: Icon(
               Icons.menu,
               color: Colors.white,
